@@ -262,10 +262,13 @@ function diaSemana(f) { return ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb
 
 // ====== MAPA EN VIVO ======
 let mapaVivo = null, mvInterval = null;
-const iconObrero = (color) => L.divIcon({
+const iconObrero = (color, nombre) => L.divIcon({
   className: '',
-  html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
-  iconSize: [22, 22], iconAnchor: [11, 11], popupAnchor: [0, -13]
+  html: `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+    <div style="width:22px;height:22px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>
+    <div style="background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis">${nombre}</div>
+  </div>`,
+  iconSize: [22, 40], iconAnchor: [11, 11], popupAnchor: [0, 0]
 });
 const iconObra = L.divIcon({
   className: '',
@@ -316,7 +319,7 @@ async function cargarMapaVivo() {
     const color = dentro ? '#16a34a' : '#dc2626';
     const estado = dentro ? '🟢 En obra' : '🔴 Retirado';
     const distTxt = o.distancia != null ? `${o.distancia} m de la obra` : '';
-    L.marker([o.lat, o.lng], { icon: iconObrero(color) })
+    L.marker([o.lat, o.lng], { icon: iconObrero(color, o.obrero) })
       .bindPopup(`<b>${esc(o.obrero)}</b><br>${estado}<br><span style="color:#64748b">${esc(o.obra)} · ${esc(o.localidad)}</span><br>Última fichada: <b>${o.hora}</b>${distTxt ? '<br>' + distTxt : ''}`)
       .addTo(mapaVivo);
     bounds.push([o.lat, o.lng]);
