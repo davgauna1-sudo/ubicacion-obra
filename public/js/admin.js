@@ -16,11 +16,12 @@ document.querySelectorAll('.tabs button').forEach(b => {
   b.onclick = () => {
     document.querySelectorAll('.tabs button').forEach(x => x.classList.remove('activa'));
     b.classList.add('activa');
-    ['obras', 'obreros', 'asistencia'].forEach(t => $(`#tab-${t}`).style.display = 'none');
+    ['obras', 'obreros', 'asistencia', 'mapa'].forEach(t => $(`#tab-${t}`).style.display = 'none');
     $(`#tab-${b.dataset.tab}`).style.display = 'block';
     if (b.dataset.tab === 'obras') setTimeout(() => mapaObra && mapaObra.invalidateSize(), 100);
     if (b.dataset.tab === 'obreros') cargarObreros();
     if (b.dataset.tab === 'asistencia') cargarObrasEnSelect('#a-obra', true);
+    if (b.dataset.tab === 'mapa') iniciarMapaVivo();
   };
 });
 
@@ -258,6 +259,84 @@ $('#a-imprimir').onclick = () => window.print();
 // ====== Utilidades ======
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function diaSemana(f) { return ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][new Date(f + 'T12:00:00').getDay()]; }
+
+// ====== MAPA EN VIVO ======
+let mapaVivo = null, mvInterval = null;
+const iconObrero = (color) => L.divIcon({
+  className: '',
+  html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
+  iconSize: [22, 22], iconAnchor: [11, 11], popupAnchor: [0, -13]
+});
+const iconObra = L.divIcon({
+  className: '',
+  html: `<div style="width:26px;height:26px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px">🏗</div>`,
+  iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -15]
+});
+
+async function cargarMapaVivo() {
+  const datos = await api('/api/mapa-vivo');
+  $('#mv-fecha').textContent = datos.fecha;
+
+  const dentroCount = datos.obreros.filter(o => o.tipo === 'entrada').length;
+  const totalHoy = datos.obreros.length;
+  $('#mv-contador').textContent = `${dentroCount} en obra · ${totalHoy} ficharon hoy`;
+  $('#mv-contador').className = 'badge ' + (dentroCount > 0 ? 'verde' : 'gris');
+
+  // Resumen por obra
+  const porObra = {};
+  datos.obreros.forEach(o => {
+    if (!porObra[o.obra]) porObra[o.obra] = { dentro: 0, fuera: 0 };
+    o.tipo === 'entrada' ? porObra[o.obra].dentro++ : porObra[o.obra].fuera++;
+  });
+  $('#mv-resumen').innerHTML = Object.entries(porObra).map(([obra, c]) =>
+    `<span style="background:#f1f5f9;border-radius:8px;padding:6px 12px;font-size:13px">
+      <strong>${esc(obra)}</strong> — 🟢 ${c.dentro} en obra · 🔴 ${c.fuera} retirado(s)
+    </span>`
+  ).join('') || '<span class="hint">Sin fichadas hoy todavía.</span>';
+
+  // Limpiar marcadores anteriores excepto tiles
+  mapaVivo.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Circle) mapaVivo.removeLayer(l); });
+
+  const bounds = [];
+
+  // Pines de obras (azul)
+  datos.obras.forEach(o => {
+    if (!o.lat || !o.lng) return;
+    L.marker([o.lat, o.lng], { icon: iconObra })
+      .bindPopup(`<b>🏗 ${esc(o.nombre)}</b><br>${esc(o.localidad)}<br><span style="color:#64748b">Encargado: ${esc(o.encargado)}</span>`)
+      .addTo(mapaVivo);
+    L.circle([o.lat, o.lng], { radius: o.radio, color: '#2563eb', fillColor: '#93c5fd', fillOpacity: 0.2, weight: 1 }).addTo(mapaVivo);
+    bounds.push([o.lat, o.lng]);
+  });
+
+  // Pines de obreros
+  datos.obreros.forEach(o => {
+    if (!o.lat || !o.lng) return;
+    const dentro = o.tipo === 'entrada';
+    const color = dentro ? '#16a34a' : '#dc2626';
+    const estado = dentro ? '🟢 En obra' : '🔴 Retirado';
+    const distTxt = o.distancia != null ? `${o.distancia} m de la obra` : '';
+    L.marker([o.lat, o.lng], { icon: iconObrero(color) })
+      .bindPopup(`<b>${esc(o.obrero)}</b><br>${estado}<br><span style="color:#64748b">${esc(o.obra)} · ${esc(o.localidad)}</span><br>Última fichada: <b>${o.hora}</b>${distTxt ? '<br>' + distTxt : ''}`)
+      .addTo(mapaVivo);
+    bounds.push([o.lat, o.lng]);
+  });
+
+  if (bounds.length) mapaVivo.fitBounds(bounds, { padding: [40, 40] });
+}
+
+function iniciarMapaVivo() {
+  if (!mapaVivo) {
+    mapaVivo = L.map('mapa-vivo').setView([-34.65, -58.45], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(mapaVivo);
+  }
+  setTimeout(() => mapaVivo.invalidateSize(), 100);
+  cargarMapaVivo();
+  clearInterval(mvInterval);
+  mvInterval = setInterval(cargarMapaVivo, 30000); // refresco automático cada 30 seg
+}
+
+$('#mv-refrescar').onclick = cargarMapaVivo;
 
 // ====== Init ======
 initMapaObra();
