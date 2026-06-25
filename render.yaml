@@ -1,0 +1,17 @@
+# Blueprint de Render - PLAN GRATIS (para demos).
+# En Render: New > Blueprint, elegi este repo. Despues completa ADMIN_USER y ADMIN_PASS.
+# Nota: en el plan free los datos son temporales (se reinician). Para datos permanentes,
+# cambia "plan: free" por "plan: starter" y agregale un disco (ver DESPLEGAR-EN-RENDER.md).
+services:
+  - type: web
+    name: ubicacion-obra
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASS
+        sync: false

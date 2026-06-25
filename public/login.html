@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso · Ubicación-Asistencia de Obra</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <h1>Ubicación-Asistencia de Obra</h1>
+      <p>Panel de administración · Control de personal por obra</p>
+      <form id="form">
+        <div class="campo">
+          <label>Usuario</label>
+          <input id="usuario" autocomplete="username" required>
+        </div>
+        <div class="campo">
+          <label>Contraseña</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="primario" type="submit">Ingresar</button>
+        <div class="error" id="error"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value;
+      const password = document.getElementById('password').value;
+      const r = await fetch('/api/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, password })
+      });
+      if (r.ok) location.href = '/admin.html';
+      else document.getElementById('error').textContent = 'Usuario o contraseña incorrectos';
+    });
+  </script>
+</body>
+</html>

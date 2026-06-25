@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel · Ubicación-Asistencia de Obra</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <h1>Ubicación-Asistencia de Obra</h1>
+      <div class="sub">Control de personal por obra · GBA y Córdoba</div>
+    </div>
+    <button id="salir">Cerrar sesión</button>
+  </div>
+
+  <div class="tabs">
+    <button data-tab="obras" class="activa">Obras</button>
+    <button data-tab="obreros">Obreros</button>
+    <button data-tab="asistencia">Asistencia</button>
+  </div>
+
+  <div class="contenido">
+    <!-- ===== OBRAS ===== -->
+    <section id="tab-obras">
+      <div class="panel">
+        <h2 id="obra-titulo">Nueva obra</h2>
+        <div class="fila">
+          <div class="campo"><label>Nombre de la obra</label><input id="o-nombre" placeholder="Ej: Edificio San Martín"></div>
+          <div class="campo"><label>Localidad</label><input id="o-localidad" placeholder="Ej: Quilmes"></div>
+          <div class="campo"><label>Provincia / Zona</label>
+            <select id="o-provincia"><option>GBA</option><option>CABA</option><option>Córdoba (CBA)</option></select>
+          </div>
+          <div class="campo"><label>Encargado / Capataz</label><input id="o-encargado" placeholder="Ej: Juan Pérez"></div>
+        </div>
+        <div class="fila" style="margin-top:12px">
+          <div class="campo"><label>Fecha de inicio</label><input id="o-fecha" type="date"></div>
+          <div class="campo"><label>Días estimados</label><input id="o-dias" type="number" min="0" placeholder="30"></div>
+          <div class="campo"><label>Radio de obra (m)</label><input id="o-radio" type="number" min="10" value="80"></div>
+        </div>
+        <p class="hint">Hacé clic en el mapa para fijar la ubicación de la obra (o buscá la dirección).</p>
+        <div class="fila" style="margin-top:6px">
+          <div class="campo" style="flex:1"><label>Buscar dirección</label>
+            <div style="display:flex;gap:6px">
+              <input id="o-buscar" placeholder="Ej: Av. Mitre 500, Avellaneda" style="flex:1">
+              <button class="sec" id="o-buscar-btn" type="button">Buscar</button>
+            </div>
+          </div>
+        </div>
+        <div id="mapa-obra" class="mapchico" style="height:280px"></div>
+        <div class="hint">Coordenadas: <span id="o-coords">—</span></div>
+        <div class="fila" style="margin-top:14px">
+          <button class="primario" id="o-guardar">Guardar obra</button>
+          <button class="sec" id="o-cancelar" style="display:none">Cancelar edición</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Obras cargadas</h2>
+        <div id="tabla-obras"></div>
+      </div>
+    </section>
+
+    <!-- ===== OBREROS ===== -->
+    <section id="tab-obreros" style="display:none">
+      <div class="panel">
+        <h2 id="obrero-titulo">Nuevo obrero</h2>
+        <div class="fila">
+          <div class="campo"><label>Nombre y apellido</label><input id="w-nombre" placeholder="Ej: Carlos Gómez"></div>
+          <div class="campo"><label>DNI (opcional)</label><input id="w-dni" placeholder="30.123.456"></div>
+          <div class="campo"><label>Obra asignada</label><select id="w-obra"></select></div>
+          <button class="primario" id="w-guardar">Agregar obrero</button>
+          <button class="sec" id="w-cancelar" style="display:none">Cancelar</button>
+        </div>
+        <p class="hint">Al agregarlo se genera un link único. Enviáselo al obrero por WhatsApp: con ese link marca entrada y salida.</p>
+      </div>
+      <div class="panel">
+        <h2>Obreros</h2>
+        <div id="tabla-obreros"></div>
+      </div>
+    </section>
+
+    <!-- ===== ASISTENCIA ===== -->
+    <section id="tab-asistencia" style="display:none">
+      <div class="panel no-print">
+        <h2>Asistencia y pago</h2>
+        <div class="fila">
+          <div class="campo"><label>Período</label>
+            <select id="a-periodo">
+              <option value="semana">Semana actual</option>
+              <option value="quincena">Quincena actual</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          <div class="campo"><label>Desde</label><input id="a-desde" type="date"></div>
+          <div class="campo"><label>Hasta</label><input id="a-hasta" type="date"></div>
+          <div class="campo"><label>Obra</label><select id="a-obra"><option value="">Todas</option></select></div>
+          <button class="primario" id="a-consultar">Consultar</button>
+          <button class="sec" id="a-imprimir">🖨️ Imprimir / PDF</button>
+        </div>
+      </div>
+      <div class="panel" id="reporte"></div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

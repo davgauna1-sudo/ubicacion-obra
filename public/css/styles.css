@@ -1,0 +1,96 @@
+:root {
+  --verde: #16a34a;
+  --verde-claro: #dcfce7;
+  --rojo: #dc2626;
+  --azul: #1d4ed8;
+  --gris: #64748b;
+  --gris-claro: #f1f5f9;
+  --borde: #e2e8f0;
+  --texto: #0f172a;
+  --naranja: #ea580c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--texto);
+  background: #f8fafc;
+  line-height: 1.5;
+}
+a { color: var(--azul); }
+
+/* Layout admin */
+.topbar {
+  background: #0f172a; color: #fff; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar h1 { font-size: 18px; font-weight: 600; }
+.topbar .sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.topbar button {
+  background: #1e293b; color: #fff; border: 1px solid #334155;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 13px;
+}
+.topbar button:hover { background: #334155; }
+
+.tabs { display: flex; gap: 4px; background: #fff; padding: 0 20px; border-bottom: 1px solid var(--borde); }
+.tabs button {
+  background: none; border: none; padding: 14px 18px; cursor: pointer;
+  font-size: 14px; color: var(--gris); border-bottom: 3px solid transparent; font-weight: 500;
+}
+.tabs button.activa { color: var(--azul); border-bottom-color: var(--azul); }
+
+.contenido { padding: 20px; max-width: 1200px; margin: 0 auto; }
+.panel { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+.panel h2 { font-size: 16px; margin-bottom: 14px; }
+.fila { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo label { font-size: 12px; color: var(--gris); font-weight: 500; }
+.campo input, .campo select {
+  padding: 9px 11px; border: 1px solid var(--borde); border-radius: 8px; font-size: 14px; min-width: 140px;
+}
+
+button.primario {
+  background: var(--azul); color: #fff; border: none; padding: 10px 18px;
+  border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+}
+button.primario:hover { opacity: .92; }
+button.sec {
+  background: #fff; color: var(--texto); border: 1px solid var(--borde);
+  padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+}
+button.sec:hover { background: var(--gris-claro); }
+button.peligro { color: var(--rojo); border-color: #fecaca; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--borde); }
+th { color: var(--gris); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+tr:hover td { background: #fafbfc; }
+
+.badge { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.badge.verde { background: var(--verde-claro); color: #166534; }
+.badge.rojo { background: #fee2e2; color: #991b1b; }
+.badge.gris { background: var(--gris-claro); color: var(--gris); }
+
+.mapchico { height: 220px; border-radius: 10px; border: 1px solid var(--borde); margin-top: 8px; }
+.hint { font-size: 12px; color: var(--gris); margin-top: 6px; }
+.linkbox {
+  display: flex; gap: 6px; align-items: center; background: var(--gris-claro);
+  padding: 6px 10px; border-radius: 8px; font-size: 12px; font-family: monospace;
+}
+.vacio { text-align: center; color: var(--gris); padding: 30px; font-size: 14px; }
+
+/* Login */
+.login-wrap { display: grid; place-items: center; min-height: 100vh; padding: 20px; }
+.login-card { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 32px; width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,.06); }
+.login-card h1 { font-size: 20px; margin-bottom: 4px; }
+.login-card p { color: var(--gris); font-size: 13px; margin-bottom: 22px; }
+.login-card .campo { margin-bottom: 14px; }
+.login-card .campo input { width: 100%; }
+.login-card button { width: 100%; margin-top: 6px; }
+.error { color: var(--rojo); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+/* Impresion */
+@media print {
+  .topbar, .tabs, .no-print, button { display: none !important; }
+  .panel { border: none; padding: 0; }
+  body { background: #fff; }
+}

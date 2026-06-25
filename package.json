@@ -1,0 +1,17 @@
+{
+  "name": "ubicacion-asistencia-obra",
+  "version": "1.0.0",
+  "description": "Control de asistencia y ubicacion de obreros por obra (GBA y CBA, Argentina)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
