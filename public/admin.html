@@ -20,6 +20,7 @@
     <button data-tab="obras" class="activa">Obras</button>
     <button data-tab="obreros">Obreros</button>
     <button data-tab="asistencia">Asistencia</button>
+    <button data-tab="mapa">🗺 Mapa en vivo</button>
   </div>
 
   <div class="contenido">
@@ -102,6 +103,27 @@
         </div>
       </div>
       <div class="panel" id="reporte"></div>
+    </section>
+  </div>
+
+    <!-- ===== MAPA EN VIVO ===== -->
+    <section id="tab-mapa" style="display:none">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div>
+            <h2 style="margin:0">Mapa en vivo — hoy <span id="mv-fecha" class="hint"></span></h2>
+            <div class="hint" style="margin-top:4px">
+              🟢 En obra &nbsp;|&nbsp; 🔴 Retirado &nbsp;|&nbsp; 🔵 Ubicación de la obra
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="mv-contador" class="badge verde" style="font-size:14px"></span>
+            <button class="sec" id="mv-refrescar">↺ Actualizar</button>
+          </div>
+        </div>
+        <div id="mv-resumen" style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
+        <div id="mapa-vivo" style="height:480px;border-radius:10px;margin-top:6px"></div>
+      </div>
     </section>
   </div>
 
