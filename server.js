@@ -271,6 +271,30 @@ app.post('/api/o/:token/marcar', (req, res) => {
   res.json({ ok: true, tipo, fecha, hora, estado, verificado, distancia });
 });
 
+// ============ MAPA EN VIVO ============
+app.get('/api/mapa-vivo', requireAdmin, (req, res) => {
+  const { fecha } = ahoraAR();
+
+  const obras = db.prepare('SELECT id, nombre, localidad, encargado, lat, lng, radio FROM obras WHERE activa = 1').all();
+
+  const registros = db.prepare(`
+    SELECT r.obrero_id, r.tipo, r.lat, r.lng, r.hora, r.verificado, r.distancia,
+           w.nombre AS obrero, o.id AS obra_id, o.nombre AS obra, o.localidad
+    FROM registros r
+    JOIN obreros w ON w.id = r.obrero_id
+    JOIN obras o ON o.id = r.obra_id
+    WHERE r.fecha = ?
+    ORDER BY r.obrero_id, r.hora DESC, r.id DESC
+  `).all(fecha);
+
+  const porObrero = new Map();
+  for (const r of registros) {
+    if (!porObrero.has(r.obrero_id)) porObrero.set(r.obrero_id, r);
+  }
+
+  res.json({ fecha, obras, obreros: [...porObrero.values()] });
+});
+
 // ============ ARCHIVOS ESTATICOS Y RUTAS DE PAGINAS ============
 app.use(express.static(join(__dirname, 'public')));
 app.get('/o/:token', (req, res) => res.sendFile(join(__dirname, 'public', 'obrero.html')));
